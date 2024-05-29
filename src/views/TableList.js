@@ -1,21 +1,5 @@
-/*!
-
-=========================================================
-* Black Dashboard React v1.2.2
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/black-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/black-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 // reactstrap components
 import {
@@ -28,7 +12,67 @@ import {
   Col,
 } from "reactstrap";
 
-function Tables() {
+function TreeTable() {
+  const [transactionData, setTransactionData] = useState([]);
+  const [expandedRows, setExpandedRows] = useState([]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("https://6656a0dc9f970b3b36c5fe01.mockapi.io/api/groupByDate/StockTransactionData");
+      setTransactionData(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const handleRowClick = (index) => {
+    const isRowCurrentlyExpanded = expandedRows.includes(index);
+    const newExpandedRows = isRowCurrentlyExpanded
+      ? expandedRows.filter(id => id !== index)
+      : [...expandedRows, index];
+    setExpandedRows(newExpandedRows);
+  };
+
+  const renderRowDetails = (rowData, parentIndex) => (
+    <tr key={`${parentIndex}-details`} className="expandable-row-details">
+      <td colSpan="7">
+        <div className="expanded-row">
+          <Table striped responsive>
+            <thead className="text-primary">
+              <tr>
+                <th scope="row">Activity Date</th>
+                <th scope="row">Process Date</th>
+                <th>Settle Date</th>
+                <th>Instrument</th>
+                <th>Description</th>
+                <th>Quantity</th>
+                <th>Trans Code</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rowData.records.map((record, index) => (
+                <tr key={`${parentIndex}-${index}`}>
+                  <td>{record["Activity Date"]}</td>
+                  <td>{record["Process Date"]}</td>
+                  <td>{record["Settle Date"]}</td>
+                  <td>{record["Instrument"]}</td>
+                  <td>{record["Description"]}</td>
+                  <td>{record["Quantity"]}</td>
+                  <td>{record["Trans Code"]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+      </td>
+    </tr>
+  );
+  
+
   return (
     <>
       <div className="content">
@@ -36,125 +80,31 @@ function Tables() {
           <Col md="12">
             <Card>
               <CardHeader>
-                <CardTitle tag="h4">Simple Table</CardTitle>
+                <CardTitle tag="h4">Tree Table</CardTitle>
               </CardHeader>
               <CardBody>
                 <Table className="tablesorter" responsive>
                   <thead className="text-primary">
                     <tr>
-                      <th>Name</th>
-                      <th>Country</th>
-                      <th>City</th>
-                      <th className="text-center">Salary</th>
+                      <th>Date</th>
+                      <th>Net Profit/Loss</th>
+                      <th>Number of Transactions</th>
+                      <th>Total Amount</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr>
-                      <td>Dakota Rice</td>
-                      <td>Niger</td>
-                      <td>Oud-Turnhout</td>
-                      <td className="text-center">$36,738</td>
-                    </tr>
-                    <tr>
-                      <td>Minerva Hooper</td>
-                      <td>Curaçao</td>
-                      <td>Sinaai-Waas</td>
-                      <td className="text-center">$23,789</td>
-                    </tr>
-                    <tr>
-                      <td>Sage Rodriguez</td>
-                      <td>Netherlands</td>
-                      <td>Baileux</td>
-                      <td className="text-center">$56,142</td>
-                    </tr>
-                    <tr>
-                      <td>Philip Chaney</td>
-                      <td>Korea, South</td>
-                      <td>Overland Park</td>
-                      <td className="text-center">$38,735</td>
-                    </tr>
-                    <tr>
-                      <td>Doris Greene</td>
-                      <td>Malawi</td>
-                      <td>Feldkirchen in Kärnten</td>
-                      <td className="text-center">$63,542</td>
-                    </tr>
-                    <tr>
-                      <td>Mason Porter</td>
-                      <td>Chile</td>
-                      <td>Gloucester</td>
-                      <td className="text-center">$78,615</td>
-                    </tr>
-                    <tr>
-                      <td>Jon Porter</td>
-                      <td>Portugal</td>
-                      <td>Gloucester</td>
-                      <td className="text-center">$98,615</td>
-                    </tr>
-                  </tbody>
-                </Table>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col md="12">
-            <Card className="card-plain">
-              <CardHeader>
-                <CardTitle tag="h4">Table on Plain Background</CardTitle>
-                <p className="category">Here is a subtitle for this table</p>
-              </CardHeader>
-              <CardBody>
-                <Table className="tablesorter" responsive>
-                  <thead className="text-primary">
-                    <tr>
-                      <th>Name</th>
-                      <th>Country</th>
-                      <th>City</th>
-                      <th className="text-center">Salary</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Dakota Rice</td>
-                      <td>Niger</td>
-                      <td>Oud-Turnhout</td>
-                      <td className="text-center">$36,738</td>
-                    </tr>
-                    <tr>
-                      <td>Minerva Hooper</td>
-                      <td>Curaçao</td>
-                      <td>Sinaai-Waas</td>
-                      <td className="text-center">$23,789</td>
-                    </tr>
-                    <tr>
-                      <td>Sage Rodriguez</td>
-                      <td>Netherlands</td>
-                      <td>Baileux</td>
-                      <td className="text-center">$56,142</td>
-                    </tr>
-                    <tr>
-                      <td>Philip Chaney</td>
-                      <td>Korea, South</td>
-                      <td>Overland Park</td>
-                      <td className="text-center">$38,735</td>
-                    </tr>
-                    <tr>
-                      <td>Doris Greene</td>
-                      <td>Malawi</td>
-                      <td>Feldkirchen in Kärnten</td>
-                      <td className="text-center">$63,542</td>
-                    </tr>
-                    <tr>
-                      <td>Mason Porter</td>
-                      <td>Chile</td>
-                      <td>Gloucester</td>
-                      <td className="text-center">$78,615</td>
-                    </tr>
-                    <tr>
-                      <td>Jon Porter</td>
-                      <td>Portugal</td>
-                      <td>Gloucester</td>
-                      <td className="text-center">$98,615</td>
-                    </tr>
+                  <tbody class>
+                    {transactionData.map((row, index) => (
+                      <React.Fragment key={index}>
+                        <tr onClick={() => handleRowClick(index)} style={{ cursor: "pointer" }}>
+                          <td><i className="fa fa-user"></i></td>
+                          <td>{row["_id"]}</td>
+                          <td>{row["netProfitLoss"]}</td>
+                          <td>{row["numOftxns"]}</td>
+                          <td>{row["totalAmount"]}</td>
+                        </tr>
+                        {expandedRows.includes(index) && row.records.length > 0 && renderRowDetails(row, index)}
+                      </React.Fragment>
+                    ))}
                   </tbody>
                 </Table>
               </CardBody>
@@ -166,4 +116,4 @@ function Tables() {
   );
 }
 
-export default Tables;
+export default TreeTable;
